@@ -38,7 +38,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
       } else {
         throw 'using preloaded data can only be done on a web page or in a web worker';
       }
-      var PACKAGE_NAME = './build/apps/index.data';
+      var PACKAGE_NAME = './bin/apps/index.data';
       var REMOTE_PACKAGE_BASE = 'index.data';
       if (typeof Module['locateFilePackage'] === 'function' && !Module['locateFile']) {
         Module['locateFile'] = Module['locateFilePackage'];
@@ -173,10 +173,10 @@ var Module = typeof Module !== 'undefined' ? Module : {};
             for (var i = 0; i < files.length; ++i) {
               DataRequest.prototype.requests[files[i].filename].onload();
             }
-                Module['removeRunDependency']('datafile_./build/apps/index.data');
+                Module['removeRunDependency']('datafile_./bin/apps/index.data');
 
       };
-      Module['addRunDependency']('datafile_./build/apps/index.data');
+      Module['addRunDependency']('datafile_./bin/apps/index.data');
     
       if (!Module.preloadResults) Module.preloadResults = {};
     
@@ -197,7 +197,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     }
   
    }
-   loadPackage({"files": [{"start": 0, "audio": 0, "end": 88, "filename": "/simple.frag"}, {"start": 88, "audio": 0, "end": 1171, "filename": "/sprite.vert"}, {"start": 1171, "audio": 0, "end": 1296, "filename": "/simple.vert"}, {"start": 1296, "audio": 0, "end": 1709, "filename": "/sprite.frag"}], "remote_package_size": 1709, "package_uuid": "7ad8988e-ec42-48a1-aa71-7f72fe92982e"});
+   loadPackage({"files": [{"start": 0, "audio": 0, "end": 88, "filename": "/simple.frag"}, {"start": 88, "audio": 0, "end": 1171, "filename": "/sprite.vert"}, {"start": 1171, "audio": 0, "end": 1296, "filename": "/simple.vert"}, {"start": 1296, "audio": 0, "end": 1709, "filename": "/sprite.frag"}], "remote_package_size": 1709, "package_uuid": "d043dfc6-08bb-45b7-af86-c25661f79525"});
   
   })();
   
