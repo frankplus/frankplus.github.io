@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <title>Plasm - plot your functions WASM fast!</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+
+    <script type="module">
+
+      const queryString = window.location.search;
+      const query = new URLSearchParams(queryString).get('q');
+      if (query)
+        document.getElementById('input').value = query;
+      
+      import init from './pkg/web.js';
+
+      async function run() {
+        await init('./pkg/web_bg.wasm');
+      }
+
+      run();
+    </script>
+
+    <div class="input_div">
+      <label for="input">Input function</label><br>
+      <input class="input" id="input" type="text" name="input" value="sin(x)+sin(y)"/>
+    </div>
+
+    <div class="canvas_div">
+      <canvas id="canvas" height="720" width="1280" />
+    </div>
+
+    <footer class="footer">
+      <a href="https://github.com/Franciman/plasm"> GitHub repo </a> <br>
+      Copyright © 2020 by Frankplus & Franciman <br>
+      All Rights Reserved.
+    </footer>
+
+  </body>
+</html>
