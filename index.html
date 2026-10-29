@@ -1,222 +1,455 @@
 <!doctype html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>CSPSP</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
-  </head>
-  <body>
-    <div class="game">
-      <input type="button" id="fullscreen" class="controls" value="Fullscreen">
-      <div class="info" id="info">
-        <div id='spinner'></div>
-        <div id="status">Downloading...</div>
-        <div>
-          <progress value="0" max="100" id="progress" hidden=1></progress>
-        </div>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Francesco Pham</title>
+<meta name="description" content="Francesco Pham — open-source engineer and Eclipse Oniro PMC Lead. I bring OpenHarmony to phones, tablets and boards, and photograph the night sky.">
+<meta name="theme-color" content="#0b1020">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1020'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%235fd3cf'/%3E%3Ccircle cx='7' cy='9' r='1.4' fill='%23ece6d6'/%3E%3Ccircle cx='25' cy='23' r='1.4' fill='%23ece6d6'/%3E%3Cpath d='M7 9 16 16 25 23' stroke='%23ece6d6' stroke-opacity='.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#top" aria-label="Back to top"><span class="brand-prompt">fp</span><span class="brand-at">@</span>oniro<span class="brand-caret" aria-hidden="true">_</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#about">about</a>
+      <a href="#bring-up">bring-up</a>
+      <a href="#projects">projects</a>
+      <a href="#talks">talks</a>
+      <a href="#after-dark">after dark</a>
+      <a href="#contact">contact</a>
+    </nav>
+    <div class="topbar-tools">
+      <span class="localtime" title="Local time in Veneto, Italy"><span id="localtime">--:--</span> <span class="dim">CET</span></span>
+      <button class="icon-btn" id="shell-open" type="button" aria-label="Open shell" title="Open shell ( ` )">&gt;_</button>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch between night sky and star atlas">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="moon-glyph" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero wrap" aria-labelledby="name">
+    <div class="hero-text">
+      <p class="eyebrow mono"><span class="coord">45.69°N 11.71°E</span> · Veneto, Italy</p>
+      <h1 id="name" class="name"><span>Francesco</span> <span>Pham</span></h1>
+      <p class="lede">I bring open operating systems to hardware that wasn't built for them.</p>
+      <p class="sublede">I lead <strong>Eclipse Oniro</strong>, the open-source project taking OpenHarmony to phones, tablets and boards for global markets, and I work as an open-source engineer with Huawei's European research centers. When the sky is clear, I'm outside with a small refractor.</p>
+      <div class="hero-actions">
+        <a class="btn btn-solid" href="#bring-up">See the bring-up log</a>
+        <a class="btn" href="https://github.com/frankplus" target="_blank" rel="noopener">github.com/frankplus ↗</a>
       </div>
-      <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
-
-      <h4>This is a port of CSPSP to the web - A 2D version of the game Counter Strike</h4>
-
-      <div class="instructions">
-        <table>
-          <tr>
-            <th>Button</th>
-            <th>PS button</th>
-            <th>Action</th>
-          </tr>
-          <tr>
-            <td>W A S D</td>
-            <td>Analog stick</td>
-            <td>Player move / GUI move</td>
-          </tr>
-          <tr>
-            <td>R key</td>
-            <td>[] Square</td>
-            <td>Reload weapon</td>
-          </tr>
-          <tr>
-            <td>G key</td>
-            <td>Triangle</td>
-            <td>Drop weapon</td>
-          </tr>
-          <tr>
-            <td>Enter</td>
-            <td>Start</td>
-            <td>Game menu / Text confirm</td>
-          </tr>
-          <tr>
-            <td>Tab</td>
-            <td>Select</td>
-            <td>View statistics</td>
-          </tr>
-          <tr>
-            <td>Left mouse click</td>
-            <td>X Cross</td>
-            <td>Shoot / GUI enter</td>
-          </tr>
-          <tr>
-            <td>Right mouse click</td>
-            <td>O Circle</td>
-            <td>Swap weapon / GUI back</td>
-          </tr>
-          <tr>
-            <td>Middle mouse click</td>
-            <td>Triangle</td>
-            <td>Throw weapon</td>
-          </tr>
-          <tr>
-            <td>Left arrow</td>
-            <td>Left trigger</td>
-            <td>Rotate player counterclockwise / GUI move left tab</td>
-          </tr>
-          <tr>
-            <td>Right arrow</td>
-            <td>Right trigger</td>
-            <td>Rotate player clockwise / GUI move right tab</td>
-          </tr>
-          <tr>
-            <td>Space</td>
-            <td>X Cross</td>
-            <td>Shoot / GUI enter</td>
-          </tr>
-          <tr>
-            <td>Backspace</td>
-            <td>O Circle</td>
-            <td>Swap weapon / GUI back</td>
-          </tr>
-          <tr>
-            <td>U Key</td>
-            <td>Up</td>
-            <td>Chat</td>
-          </tr>
-          <tr>
-            <td>K Key</td>
-            <td>Right</td>
-            <td>Team Chat</td>
-          </tr>
-          <tr>
-            <td>J Key</td>
-            <td>Down</td>
-            <td>Buy weapon menu</td>
-          </tr>
-          <tr>
-            <td>Left ALT key</td>
-            <td></td>
-            <td>Change movement mode</td>
-          </tr>
-        </table><br>
-        <b> Gamepad is also supported (Tested with PS3 and Xbox one controllers) </b>
-      </div>
-
-      <form style="margin: 20px;">
-        <input type="checkbox" id="use_local_proxy" name="use_local_proxy" value="use_local_proxy">
-        <label for="use_local_proxy">Use localhost proxy</label>
-        <input type="button" id="set_proxy_btn" value="Set" onclick="onSetProxy()">
-        <!--
-        <label for="fname">Proxy address:</label><br>
-        <input type="text" id="proxy_address" value="wss://frankinfotech.it:2900">
-        <input type="button" id="set_proxy_btn" value="Set">
-        -->
-      </form>
-
-      <a href="https://discord.gg/K2Ene4y"><img class="discord" src="joindiscord.png" alt="join out discord"></a>
+      <dl class="hero-status mono">
+        <div><dt>role</dt><dd>PMC Lead, Eclipse Oniro</dd></div>
+        <div><dt>porting</dt><dd>Oniro to the Volla Phone Plinius</dd></div>
+        <div><dt>last seen</dt><dd>OpenHarmony Tech Conference Prague</dd></div>
+      </dl>
     </div>
 
+    <figure class="hero-device">
+      <div class="phone" id="phone">
+        <span class="phone-btn phone-btn-power" aria-hidden="true"></span>
+        <span class="phone-btn phone-btn-vol" aria-hidden="true"></span>
+        <div class="screen" id="screen" data-stage="log">
+          <span class="punch" aria-hidden="true"></span>
 
-    <script type='text/javascript'>
-      var statusElement = document.getElementById('status');
-      var progressElement = document.getElementById('progress');
-      var spinnerElement = document.getElementById('spinner');
-      var infoElement = document.getElementById('info');
+          <pre class="boot-log" id="boot-log" aria-hidden="true"></pre>
 
-      var Module = {
-        canvas: (function() {
-          var canvas = document.getElementById('canvas');
+          <div class="boot-splash" aria-hidden="true"><span>oniro</span><i></i></div>
 
-          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-          // application robust, you may want to override this behavior before shipping!
-          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+          <div class="home" id="home">
+            <div class="statusbar mono" aria-hidden="true">
+              <span id="phone-time">21:00</span>
+              <span class="sb-right">LTE <span class="bars"><i></i><i></i><i></i><i></i></span> <span class="batt"><i></i></span></span>
+            </div>
+            <div class="widget">
+              <div class="widget-time" id="widget-time">21:00</div>
+              <div class="widget-date mono" id="widget-date">Thu 29 Oct</div>
+              <div class="widget-moon mono"><canvas id="widget-moon-canvas" width="28" height="28" aria-hidden="true"></canvas><span id="widget-moon">Moon</span></div>
+            </div>
+            <nav class="apps" aria-label="Phone apps (jump to section)">
+              <a class="app" href="#about" style="--app: var(--oiii)"><span class="app-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.6"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg></span><span class="app-label">About</span></a>
+              <a class="app" href="#bring-up" style="--app: var(--halpha)"><span class="app-icon"><svg viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/><path d="M9.5 3v3.5M14.5 3v3.5M9.5 17.5V21M14.5 17.5V21M3 9.5h3.5M3 14.5h3.5M17.5 9.5H21M17.5 14.5H21"/></svg></span><span class="app-label">Bring-up</span></a>
+              <a class="app" href="#projects" style="--app: var(--sii)"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 17 10 7l5 6 4-7"/><circle cx="5" cy="17" r="1.6"/><circle cx="10" cy="7" r="1.6"/><circle cx="15" cy="13" r="1.6"/><circle cx="19" cy="6" r="1.6"/></svg></span><span class="app-label">Projects</span></a>
+              <a class="app" href="#talks" style="--app: var(--oiii)"><span class="app-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M8.5 15.5a5 5 0 0 1 0-7M15.5 8.5a5 5 0 0 1 0 7M5.6 18.4a9 9 0 0 1 0-12.8M18.4 5.6a9 9 0 0 1 0 12.8"/></svg></span><span class="app-label">Talks</span></a>
+              <a class="app" href="#after-dark" style="--app: var(--sii)"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 15 16.5 7.5l1.6 2.7L5.6 17.7Z"/><path d="M18.5 6.3l1 1.7M10 13.5 8 21M10.5 13 14 21"/></svg></span><span class="app-label">Sky</span></a>
+              <a class="app" href="#contact" style="--app: var(--halpha)"><span class="app-icon"><svg viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span><span class="app-label">Contact</span></a>
+            </nav>
+            <div class="dock">
+              <button class="app" type="button" data-open-shell style="--app: var(--device-ink)"><span class="app-icon app-icon-dark"><svg viewBox="0 0 24 24"><path d="m5 8 4 4-4 4M11 16h8"/></svg></span><span class="app-label">Shell</span></button>
+              <a class="app" href="https://github.com/frankplus" target="_blank" rel="noopener" style="--app: var(--device-ink)"><span class="app-icon app-icon-dark"><svg viewBox="0 0 24 24"><path d="m8.5 7.5-4.5 4.5 4.5 4.5M15.5 7.5l4.5 4.5-4.5 4.5M13.5 5l-3 14"/></svg></span><span class="app-label">GitHub</span></a>
+            </div>
+            <span class="gesture" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+      <figcaption class="device-caption mono">
+        <span>A simulated boot of Oniro on a Volla Phone Plinius. Tap an app.</span>
+        <button class="link-btn" id="reboot" type="button">↻ reboot</button>
+      </figcaption>
+    </figure>
+  </section>
 
-          return canvas;
-        })(),
-        setStatus: function(text) {
-          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
-          if (text === Module.setStatus.last.text) return;
-          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-          var now = Date.now();
-          if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
-          Module.setStatus.last.time = now;
-          Module.setStatus.last.text = text;
-          if (m) {
-            text = m[1];
-            progressElement.value = parseInt(m[2])*100;
-            progressElement.max = parseInt(m[4])*100;
-            progressElement.hidden = false;
-            spinnerElement.hidden = false;
-            infoElement.hidden = false;
-            canvas.hidden = true;
-          } else {
-            progressElement.value = null;
-            progressElement.max = null;
-            progressElement.hidden = true;
-            if (!text) {
-              spinnerElement.style.display = 'none';
-              infoElement.hidden = true;
-            }
-            canvas.hidden = false;
-          }
-          statusElement.innerHTML = text;
-        },
-        totalDependencies: 0,
-        monitorRunDependencies: function(left) {
-          this.totalDependencies = Math.max(this.totalDependencies, left);
-          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
-        }
-      };
-      Module.setStatus('Downloading...');
-      window.onerror = function(event) {
-        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
-        Module.setStatus('Exception thrown, see JavaScript console');
-        spinnerElement.style.display = 'none';
-        Module.setStatus = function(text) {
-          if (text) Module.printErr('[post-exception status] ' + text);
-        };
-      };
+  <!-- ============ ABOUT ============ -->
+  <section class="section wrap" id="about" aria-labelledby="about-h">
+    <header class="section-head">
+      <p class="label mono">whoami</p>
+      <h2 id="about-h">Engineer, project lead, amateur astronomer.</h2>
+    </header>
 
-      function onSetProxy() {
-        use_local_proxy = document.getElementById("use_local_proxy").checked;
-        _set_local_proxy(use_local_proxy);
-      }
+    <div class="about-grid">
+      <figure class="eyepiece">
+        <div class="eyepiece-lens">
+          <img src="assets/portrait.jpg" alt="Portrait of Francesco Pham, smiling, in round glasses and a white shirt" width="560" height="560" loading="lazy">
+          <span class="reticle" aria-hidden="true"></span>
+        </div>
+        <figcaption class="mono">fig. 1 — observed in daylight</figcaption>
+      </figure>
 
-      // Work-around chromium autoplay policy
-      // https://github.com/emscripten-core/emscripten/issues/6511
-      function resumeAudio(e) {
-          if (typeof Module === 'undefined'
-              || typeof Module.SDL2 == 'undefined'
-              || typeof Module.SDL2.audioContext == 'undefined')
-              return;
-          if (Module.SDL2.audioContext.state == 'suspended') {
-              Module.SDL2.audioContext.resume();
-          }
-          if (Module.SDL2.audioContext.state == 'running') {
-              document.getElementById('canvas').removeEventListener('click', resumeAudio);
-              document.removeEventListener('keydown', resumeAudio);
-          }
-      }
-      document.getElementById('canvas').addEventListener('click', resumeAudio);
-      document.addEventListener('keydown', resumeAudio);
-    </script>
-    <script async type="text/javascript" src="index.js"></script>
+      <div class="about-text prose">
+        <p>I've been writing software since I was a kid and never really stopped taking things apart. I studied Computer Engineering at the University of Padua, with an Erasmus semester at the University of Bergen, and spent my theses on deep learning for depth sensing and 3D rendering.</p>
+        <p>Since 2021 I've worked on Eclipse Oniro, first as Committer Representative and now as PMC Lead. On a given day that means bringing up a new device, porting a framework or an app, building tools and CI for other developers, reviewing community contributions, and explaining all of it on stage.</p>
+        <p>I care about open governance and vendor-neutral foundations, and about Europe having a real say in the software its devices run, from digital sovereignty to regulation like the Cyber Resilience Act.</p>
+      </div>
 
-    <footer class="footer">
-      Copyright © 2020 by Francesco Pham <br>
-      All Rights Reserved.
-    </footer>
-  </body>
+      <dl class="facts">
+        <div><dt class="mono">Leads</dt><dd>Eclipse Oniro, as PMC Lead and committer representative on the Oniro Working Group</dd></div>
+        <div><dt class="mono">Works with</dt><dd>Huawei Europe Research Centers, since Nov 2021</dd></div>
+        <div><dt class="mono">Studied</dt><dd>M.S. Computer Engineering, summa cum laude · B.S. 110/110 · University of Padua</dd></div>
+        <div><dt class="mono">Writes</dt><dd>C, C++, Rust, TypeScript &amp; ArkTS, Python, Kotlin, shell</dd></div>
+        <div><dt class="mono">Speaks</dt><dd>Italian, English, Vietnamese</dd></div>
+        <div><dt class="mono">Honours</dt><dd>Hack@2021 national finalist (4th) · ICPC SWERC 2021 · Iglesias Foundation and “1000 e una lode” scholarships · EUVIP 2022 paper</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ BRING-UP ============ -->
+  <section class="section wrap" id="bring-up" aria-labelledby="bringup-h">
+    <header class="section-head">
+      <p class="label mono">bring-up</p>
+      <h2 id="bringup-h">Teaching phones to boot something new.</h2>
+      <p class="section-intro">Commercial phones ship with Android vendor drivers and nothing else. On the Volla Phone Plinius, OpenHarmony boots first on the phone's own Android 14 kernel and owns the device. Under OpenHarmony's standard hardware interface, one small plug-in per interface reaches the hardware by one of three routes: Android HALs loaded in-process through libhybris, vendor daemons in a Halium container, or code written straight against the kernel driver.</p>
+    </header>
+
+    <div class="board" id="board">
+      <div class="board-head mono">
+        <span>Volla Phone Plinius · MediaTek Dimensity 7300 · OpenHarmony 7.0</span>
+        <span class="board-summary" id="board-summary" aria-live="polite">13 working · 3 in progress</span>
+        <button class="link-btn" id="board-run" type="button">run bring-up ▸</button>
+      </div>
+      <ol class="subsystems" id="subsystems">
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Kernel</span><span class="ss-note">The phone's own Android 14 GKI kernel with its vendor modules</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Halium container</span><span class="ss-note">Android vendor services only. No interface, no apps.</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Display</span><span class="ss-note">1080×2400 OLED. Graphics shared with the HAL, never copied.</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">GPU</span><span class="ss-note">Mali-G615 at full frame rate</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Touch</span><span class="ss-note">The full Oniro interface, sized for this panel</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Audio</span><span class="ss-note">Speaker and microphone through the in-process audio HAL</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Cameras</span><span class="ss-note">Front and rear in the standard Camera app, via vendor daemons over binder</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Telephony</span><span class="ss-note">Calls, SMS and 4G data. Calls use the older fallback path until VoLTE lands.</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Wi-Fi</span><span class="ss-note">Joins networks with real traffic, straight on the kernel driver</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Sensors</span><span class="ss-note">Sensors, vibration and brightness, straight on the kernel drivers</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Apps</span><span class="ss-note">App Store, browser, media and games</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Android apps</span><span class="ss-note">Optional Waydroid container. Each app opens as an ordinary OpenHarmony window.</span><span class="ss-state mono">ok</span></li>
+        <li data-state="ok"><span class="led" aria-hidden="true"></span><span class="ss-name">Location</span><span class="ss-note">GPS positioning through OpenHarmony's location service</span><span class="ss-state mono">ok</span></li>
+        <li data-state="wip"><span class="led" aria-hidden="true"></span><span class="ss-name">Bluetooth</span><span class="ss-note">No earbuds or car yet. Wireless audio is otherwise ready.</span><span class="ss-state mono">wip</span></li>
+        <li data-state="wip"><span class="led" aria-hidden="true"></span><span class="ss-name">Video</span><span class="ss-note">Recording and hardware playback. Photos already work.</span><span class="ss-state mono">wip</span></li>
+        <li data-state="wip"><span class="led" aria-hidden="true"></span><span class="ss-name">NFC &amp; fingerprint</span><span class="ss-note">The furthest from done</span><span class="ss-state mono">wip</span></li>
+      </ol>
+      <p class="board-targets mono">Built on the architecture of my first phone port, the Volla Phone X23. Also brought up: Volla Tablet · Raspberry Pi 4 (Yocto BSP) · QEMU emulator</p>
+    </div>
+
+    <h3 class="sub-h">Timeline</h3>
+    <ol class="timeline">
+      <li>
+        <p class="tl-when mono">2021 → now</p>
+        <div class="tl-body">
+          <h4>Open Source Software Engineer <span class="tl-org">Huawei Europe Research Centers</span></h4>
+          <p>PMC Lead of Eclipse Oniro, after serving as its Committer Representative. I lead engineering and community for an open mobile and IoT platform built on OpenHarmony, with a focus on privacy and EU regulatory compliance.</p>
+          <ul>
+            <li>Brought up Oniro on Raspberry Pi 4 and QEMU with Yocto BSPs, then on Volla phones and tablets with Halium.</li>
+            <li>Built GitHub Actions CI/CD for OpenHarmony mirror sync, image builds, testing and board flashing.</li>
+            <li>Ported VLC, Tauri and Capacitor, and shipped the Oniro IDE extension for VS Code.</li>
+            <li>Delivered partner proofs of concept with Bosch and Hoperun on Eclipse Kanto and Mosquitto, and designed a C++ CoAP framework for Linux and Zephyr.</li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <p class="tl-when mono">2019 → 2021</p>
+        <div class="tl-body">
+          <h4>M.S. Computer Engineering <span class="tl-org">University of Padua</span></h4>
+          <p>Summa cum laude, with an Erasmus exchange at the University of Bergen. Thesis on deep-learning level-of-detail selection for 3D applications, published at EUVIP 2022.</p>
+        </div>
+      </li>
+      <li>
+        <p class="tl-when mono">2016 → 2019</p>
+        <div class="tl-body">
+          <h4>B.S. Computer Engineering <span class="tl-org">University of Padua</span></h4>
+          <p>110/110. Thesis on fusing stereo and time-of-flight depth with a residual network, 7× more accurate than either sensor alone.</p>
+        </div>
+      </li>
+      <li>
+        <p class="tl-when mono">2015</p>
+        <div class="tl-body">
+          <h4>Full-stack web developer intern <span class="tl-org">Kiteblue Italy</span></h4>
+          <p>A responsive web application with AngularJS and Node.js.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section class="section wrap" id="projects" aria-labelledby="projects-h">
+    <header class="section-head">
+      <p class="label mono">~/projects</p>
+      <h2 id="projects-h">Things I've built, charted.</h2>
+      <p class="section-intro">Four constellations: devices I've ported to, the bridges that bring apps across, the tools I make for other developers, and the work that came before Oniro. Stars are named the way astronomers name them, brightest first. Pick one.</p>
+    </header>
+
+    <div class="chart-wrap">
+      <div class="chart-frame">
+        <svg class="chart" id="chart" viewBox="0 0 1000 640" role="group" aria-label="Star chart of projects"></svg>
+      </div>
+      <article class="star-card" id="star-card" aria-live="polite"></article>
+    </div>
+
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <!-- ============ TALKS ============ -->
+  <section class="section wrap" id="talks" aria-labelledby="talks-h">
+    <header class="section-head">
+      <p class="label mono">talks.log</p>
+      <h2 id="talks-h">On stage.</h2>
+      <p class="section-intro">How OpenHarmony reaches new hardware, told to open-source, research and community audiences across Europe. Slides for every talk are in <a href="https://github.com/frankplus/presentations" target="_blank" rel="noopener">frankplus/presentations</a>.</p>
+    </header>
+
+    <ol class="talks">
+      <li class="talk">
+        <span class="talk-year mono">2026</span>
+        <span class="talk-event">OpenHarmony technical conference <span class="talk-where mono">Prague</span></span>
+        <span class="talk-title">Bringing Oniro to a European developer phone</span>
+        <span class="talk-links mono"><a href="https://github.com/frankplus/presentations/blob/master/OpenHarmony_Technical_Conference_Prague_2026_Bringing_Oniro_to_a_European_Developer_Phone.pdf" target="_blank" rel="noopener">slides ↗</a></span>
+      </li>
+      <li class="talk">
+        <span class="talk-year mono">2026</span>
+        <span class="talk-event">Volla Community Days <span class="talk-where mono">Remscheid</span></span>
+        <span class="talk-title">Oniro on Volla: An open mobile OS, running on your hardware</span>
+        <span class="talk-links mono"><a href="https://www.youtube.com/live/bQt_rtN_ZK0?t=15505" target="_blank" rel="noopener">video ↗</a><a href="https://github.com/frankplus/presentations/blob/master/Volla_Community_Days_2026_Francesco_Pham_Oniro_on_Volla.pdf" target="_blank" rel="noopener">slides ↗</a></span>
+      </li>
+      <li class="talk">
+        <span class="talk-year mono">2026</span>
+        <span class="talk-event">GOSIM Paris <span class="talk-where mono">OpenHarmony Tech Forum · Paris</span></span>
+        <span class="talk-title">Lowering Every Barrier: How Oniro Brings Devices, Apps, and Developers to OpenHarmony</span>
+        <span class="talk-links mono"><a href="https://github.com/frankplus/presentations/blob/master/Lowering_Every_Barrier_Francesco_Pham_GOSIM26.pdf" target="_blank" rel="noopener">slides ↗</a></span>
+      </li>
+      <li class="talk">
+        <span class="talk-year mono">2026</span>
+        <span class="talk-event">FOSDEM <span class="talk-where mono">Brussels</span></span>
+        <span class="talk-title">Bringing OpenHarmony to Phones: Lessons from the Oniro Porting Effort</span>
+        <span class="talk-links mono"><a href="https://fosdem.org/2026/schedule/event/SYBWKY-bringing_openharmony_to_phones_lessons_from_the_oniro_porting_effort/" target="_blank" rel="noopener">video ↗</a><a href="https://github.com/frankplus/presentations/blob/master/FOSDEM_2026_Bringing_OpenHarmony_to_Phones.pdf" target="_blank" rel="noopener">slides ↗</a></span>
+      </li>
+      <li class="talk">
+        <span class="talk-year mono">2025</span>
+        <span class="talk-event">SFSCON <span class="talk-where mono">Bolzano</span></span>
+        <span class="talk-title">From IoT to Mobile: Oniro's Technical Journey Toward Digital Independence</span>
+        <span class="talk-links mono"><a href="https://www.sfscon.it/talks/from-iot-to-mobile-oniros-technical-journey-toward-digital-independence/" target="_blank" rel="noopener">video ↗</a><a href="https://github.com/frankplus/presentations/blob/master/SFSCON2025_From_IoT_to_Mobile_Oniro_Technical_Journey_Toward_Digital_Independence.pdf" target="_blank" rel="noopener">slides ↗</a></span>
+      </li>
+      <li class="talk">
+        <span class="talk-year mono">2025</span>
+        <span class="talk-event">OpenHarmony Technical Conference</span>
+        <span class="talk-title">Accelerating Global OpenHarmony Adoption through Oniro</span>
+        <span class="talk-links mono"><a href="https://github.com/frankplus/presentations/blob/master/OpenHarmony_Technical_Conference-Accelerating_Global_OpenHarmony_Adoption_through_Oniro.pdf" target="_blank" rel="noopener">slides ↗</a></span>
+      </li>
+      <li class="talk">
+        <span class="talk-year mono">2025</span>
+        <span class="talk-event">Volla Community Days <span class="talk-where mono">Remscheid</span></span>
+        <span class="talk-title">Porting OpenHarmony to Volla phones: a technical deep dive</span>
+        <span class="talk-links mono"><a href="https://www.youtube.com/live/keFKC4Csib0?t=4942" target="_blank" rel="noopener">video ↗</a><a href="https://github.com/frankplus/presentations/blob/master/Volla_Community_Days_2025_Francesco_Pham.pdf" target="_blank" rel="noopener">slides ↗</a></span>
+      </li>
+      <li class="talk">
+        <span class="talk-year mono">2025</span>
+        <span class="talk-event">ASPLOS / EuroSys <span class="talk-where mono">Rotterdam</span></span>
+        <span class="talk-title">Oniro and the OpenHarmony ecosystem</span>
+        <span class="talk-links mono"><a href="https://github.com/frankplus/presentations/blob/master/ASPLOS25_EuroSys25_Francesco_Pham.pdf" target="_blank" rel="noopener">slides ↗</a></span>
+      </li>
+      <li class="talk">
+        <span class="talk-year mono">2025</span>
+        <span class="talk-event">FOSDEM <span class="talk-where mono">Brussels</span></span>
+        <span class="talk-title">Bringing Oniro to Mobile: Challenges in Hardware Enablement</span>
+        <span class="talk-links mono"><a href="https://fosdem.org/2025/schedule/event/fosdem-2025-4684-bringing-oniro-to-mobile-challenges-in-hardware-enablement/" target="_blank" rel="noopener">video ↗</a><a href="https://github.com/frankplus/presentations/blob/master/Fosdem_2025_Francesco_Pham.pdf" target="_blank" rel="noopener">slides ↗</a></span>
+      </li>
+    </ol>
+    <p class="talks-more">I also mentor at hackathons such as HackaTUM in Munich, and demo Oniro hardware at events like Huawei Connect.</p>
+  </section>
+
+  <!-- ============ AFTER DARK ============ -->
+  <section class="section wrap" id="after-dark" aria-labelledby="dark-h">
+    <header class="section-head">
+      <p class="label mono">after dark</p>
+      <h2 id="dark-h">Under a dark sky.</h2>
+    </header>
+
+    <div class="dark-grid">
+      <div class="prose">
+        <p>Away from the keyboard I photograph the sky with a small kit: a Skywatcher 72ED refractor with a focal reducer, a Star Adventurer tracking mount, a Tamron 70–300 mm lens, and a Nikon D5300.</p>
+        <p>I also take portraits and long telephoto shots of the Moon rising behind people, and keep a drawer of Raspberry Pis and microcontrollers.</p>
+      </div>
+
+      <aside class="tonight" aria-labelledby="tonight-h">
+        <p class="label mono" id="tonight-h">Tonight over Veneto</p>
+        <canvas id="tonight-moon" width="160" height="160" aria-hidden="true"></canvas>
+        <p class="tonight-phase" id="tonight-phase">Moon</p>
+        <p class="tonight-meta mono" id="tonight-meta"></p>
+        <p class="tonight-advice" id="tonight-advice"></p>
+      </aside>
+    </div>
+
+    <h3 class="sub-h">Observation log</h3>
+
+    <!-- Web copies live in assets/photos (800px, 1600px and a 240px thumb per photo); captions and gear are in PHOTOS in main.js. -->
+    <article class="obs obs-feature" aria-labelledby="obs-eclipse-h">
+      <button class="obs-open" type="button" data-photo="eclipse-totality" aria-label="View Totality full size">
+        <img id="eclipse-main" src="assets/photos/eclipse-totality-800.jpg" srcset="assets/photos/eclipse-totality-800.jpg 800w, assets/photos/eclipse-totality-1600.jpg 1600w" sizes="(max-width: 860px) 100vw, 680px" width="800" height="800" alt="The Moon's black disc surrounded by the glowing white-gold corona during totality">
+      </button>
+      <div class="obs-body">
+        <p class="obs-cat mono">The Sun · eclipsed by the Moon</p>
+        <h3 id="obs-eclipse-h">Total solar eclipse</h3>
+        <dl class="obs-log mono">
+          <div><dt>Date</dt><dd>12 August 2026</dd></div>
+          <div><dt>Camera</dt><dd>Nikon D5300</dd></div>
+          <div><dt>Lens</dt><dd>Tamron 70–300 mm</dd></div>
+          <div><dt>Finish</dt><dd>HDR merge, GIMP</dd></div>
+        </dl>
+        <div class="obs-frame" aria-live="polite">
+          <p class="obs-frame-title" id="eclipse-frame-title">Totality</p>
+          <p class="obs-frame-desc" id="eclipse-frame-desc">The corona, the Sun's outer atmosphere, shows only while the Moon covers the whole disc.</p>
+        </div>
+        <div class="filmstrip" id="eclipse-strip" role="group" aria-label="Eclipse frames">
+          <button class="frame" type="button" data-photo="eclipse-totality" aria-pressed="true"><img src="assets/photos/eclipse-totality-thumb.jpg" alt="" width="240" height="240" loading="lazy"><span>Totality</span></button>
+          <button class="frame" type="button" data-photo="eclipse-hdr" aria-pressed="false"><img src="assets/photos/eclipse-hdr-thumb.jpg" alt="" width="240" height="240" loading="lazy"><span>HDR corona</span></button>
+          <button class="frame" type="button" data-photo="eclipse-diamond-ring" aria-pressed="false"><img src="assets/photos/eclipse-diamond-ring-thumb.jpg" alt="" width="240" height="240" loading="lazy"><span>Diamond ring</span></button>
+          <button class="frame" type="button" data-photo="eclipse-bailys-beads" aria-pressed="false"><img src="assets/photos/eclipse-bailys-beads-thumb.jpg" alt="" width="240" height="240" loading="lazy"><span>Baily's beads</span></button>
+          <button class="frame" type="button" data-photo="eclipse-sequence" aria-pressed="false"><img src="assets/photos/eclipse-sequence-thumb.jpg" alt="" width="240" height="240" loading="lazy"><span>Sequence</span></button>
+          <button class="frame" type="button" data-photo="eclipse-sunset" aria-pressed="false"><img src="assets/photos/eclipse-sunset-thumb.jpg" alt="" width="240" height="240" loading="lazy"><span>Eclipsed sunset</span></button>
+        </div>
+      </div>
+    </article>
+
+    <div class="obs-pair">
+      <article class="obs" aria-labelledby="obs-m31-h">
+        <button class="obs-open obs-open-cover" type="button" data-photo="m31" aria-label="View Andromeda Galaxy full size">
+          <img src="assets/photos/m31-800.jpg" srcset="assets/photos/m31-800.jpg 800w, assets/photos/m31-1600.jpg 1600w" sizes="(max-width: 860px) 100vw, 560px" width="800" height="1319" loading="lazy" alt="The Andromeda Galaxy as a tilted spiral among dense stars, with a small companion galaxy below it">
+        </button>
+        <div class="obs-body">
+          <p class="obs-cat mono">Messier 31 · 2.5 million light-years</p>
+          <h3 id="obs-m31-h">Andromeda Galaxy</h3>
+          <p>The nearest large galaxy to our own, with its companion galaxies, taken with a telephoto lens on a tracking mount.</p>
+          <dl class="obs-log mono">
+            <div><dt>Date</dt><dd>September 2026</dd></div>
+            <div><dt>Camera</dt><dd>Nikon D5300</dd></div>
+            <div><dt>Lens</dt><dd>Tamron 70–300 mm</dd></div>
+            <div><dt>Mount</dt><dd>Star Adventurer</dd></div>
+            <div><dt>Processing</dt><dd>Siril · GraXpert · GHS · StarNet</dd></div>
+          </dl>
+        </div>
+      </article>
+
+      <article class="obs" aria-labelledby="obs-moon-h">
+        <button class="obs-open" type="button" data-photo="moon" aria-label="View waxing gibbous Moon full size">
+          <img src="assets/photos/moon-800.jpg" srcset="assets/photos/moon-800.jpg 800w, assets/photos/moon-1600.jpg 1016w" sizes="(max-width: 860px) 100vw, 560px" width="800" height="813" loading="lazy" alt="Waxing gibbous Moon in sharp detail, with craters standing out along the terminator">
+        </button>
+        <div class="obs-body">
+          <p class="obs-cat mono">The Moon · 8 days old, 61% lit</p>
+          <h3 id="obs-moon-h">Waxing gibbous Moon</h3>
+          <p>Along the terminator the sunlight comes in low, so crater walls and mountain ranges cast long shadows.</p>
+          <dl class="obs-log mono">
+            <div><dt>Date</dt><dd>19 October 2026</dd></div>
+            <div><dt>Telescope</dt><dd>Sky-Watcher 72ED + reducer</dd></div>
+            <div><dt>Camera</dt><dd>Nikon D3500</dd></div>
+            <div><dt>Processing</dt><dd>Stacked in Siril, finished in GIMP</dd></div>
+          </dl>
+        </div>
+      </article>
+    </div>
+
+    <article class="obs obs-feature obs-feature-portrait" aria-labelledby="obs-portrait-h">
+      <button class="obs-open obs-open-cover" type="button" data-photo="moon-portrait" aria-label="View Reaching for the Moon full size">
+        <img src="assets/photos/moon-portrait-800.jpg" srcset="assets/photos/moon-portrait-800.jpg 800w, assets/photos/moon-portrait-1600.jpg 1600w" sizes="(max-width: 860px) 100vw, 460px" width="800" height="1198" loading="lazy" alt="Silhouette of a person with long hair, seen from behind, pointing up at a nearly full Moon in a blue-grey evening sky">
+      </button>
+      <div class="obs-body">
+        <p class="obs-cat mono">The Moon · 13 days old, 98% lit</p>
+        <h3 id="obs-portrait-h">Reaching for the Moon</h3>
+        <p>Shot from far away through the 72ED, which makes the Moon look huge beside a person. At that focal length the person and the Moon can't both be sharp, so this is two frames, one focused on each, blended into one.</p>
+        <dl class="obs-log mono">
+          <div><dt>Date</dt><dd>24 October 2026</dd></div>
+          <div><dt>Telescope</dt><dd>Sky-Watcher 72ED</dd></div>
+          <div><dt>Camera</dt><dd>Nikon D5300</dd></div>
+          <div><dt>Exposure</dt><dd>1/1250 s · ISO 200</dd></div>
+          <div><dt>Finish</dt><dd>2-frame focus blend, GIMP</dd></div>
+        </dl>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="section wrap contact" id="contact" aria-labelledby="contact-h">
+    <header class="section-head">
+      <p class="label mono">contact</p>
+      <h2 id="contact-h">Say hello.</h2>
+      <p class="section-intro">Happy to talk about OpenHarmony, porting, open-source governance, or whatever you photographed last night.</p>
+    </header>
+    <div class="email-row">
+      <a class="email" href="mailto:pham.francesco@gmail.com" id="email">pham.francesco@gmail.com</a>
+      <button class="btn" id="copy-email" type="button">Copy address</button>
+    </div>
+    <ul class="links mono">
+      <li><a href="https://github.com/frankplus" target="_blank" rel="noopener">GitHub ↗</a></li>
+      <li><a href="https://www.linkedin.com/in/francesco-pham-54128486/" target="_blank" rel="noopener">LinkedIn ↗</a></li>
+      <li><a href="https://github.com/frankplus/presentations" target="_blank" rel="noopener">Slides &amp; talk videos ↗</a></li>
+      <li><a href="https://oniroproject.org/" target="_blank" rel="noopener">Eclipse Oniro ↗</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer wrap mono">
+  <span>© 2026 Francesco Pham</span>
+  <span>Hand-built with HTML, CSS and a little JavaScript. No trackers.</span>
+  <span>Press <kbd>`</kbd> for a shell.</span>
+</footer>
+
+<dialog class="shell" id="shell" aria-label="Shell">
+  <div class="shell-bar mono"><span>visitor@frankplus: ~</span><button class="link-btn" id="shell-close" type="button" aria-label="Close shell">exit ✕</button></div>
+  <div class="shell-out mono" id="shell-out" aria-live="polite"></div>
+  <form class="shell-in mono" id="shell-form" autocomplete="off">
+    <label for="shell-input"><span class="ps1">visitor@frankplus:~$</span></label>
+    <input id="shell-input" name="cmd" type="text" spellcheck="false" autocapitalize="off" autocomplete="off">
+  </form>
+</dialog>
+
+<dialog class="lightbox" id="lightbox" aria-label="Photo viewer">
+  <figure class="lb-figure">
+    <img id="lb-img" alt="">
+    <figcaption><b id="lb-title"></b><span class="mono" id="lb-meta"></span></figcaption>
+  </figure>
+  <button class="lb-btn lb-prev" id="lb-prev" type="button" aria-label="Previous photo">←</button>
+  <button class="lb-btn lb-next" id="lb-next" type="button" aria-label="Next photo">→</button>
+  <button class="lb-btn lb-close" id="lb-close" type="button" aria-label="Close photo viewer">✕</button>
+  <span class="lb-count mono" id="lb-count"></span>
+</dialog>
+
+<span class="toast mono" id="toast" role="status" hidden></span>
+
+<script src="main.js"></script>
+</body>
 </html>
-
-

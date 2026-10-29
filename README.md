@@ -1,20 +1,11 @@
-# CSWEB
-Live demo: https://frankplus.github.io
+# frankplus.github.io
 
-CSPSP was a homebrew 2D video game based on counter strike originally developed for PSP by 
-@kevinbchen : 
-- [link to the repository](https://github.com/kevinbchen/cspsp) 
-- [link to the game website](https://cspsp.appspot.com/)
+Personal website of Francesco Pham: https://frankplus.github.io
 
-This is a port of the game to the web using webassembly and emscripten to compile the code. 
-I have rewritten the game engine to support webGL/opengles 3.
+Plain HTML, CSS and JavaScript with no build step. `index.html`, `style.css` and `main.js` are the site; photos live in `assets/`.
 
-## Features
-- Working rendering engine compatible with opengles3
-- Sprite renderer using shaders
-- keyboard support
-- Working sound engine using SDL_mixer
-- Mouse support to control the player
-- Gamepad support
-- Online connection through websockets
-- Keyboard support for text typing
+Also hosted here:
+
+- [`cspsp/`](https://frankplus.github.io/cspsp/): CSPSP, a port of the PSP homebrew game to the web with WebAssembly ([details](cspsp/README.md))
+- [`plasm/`](https://frankplus.github.io/plasm/): mathematical function plotter in Rust and WebAssembly
+- [`JGE/`](https://frankplus.github.io/JGE/): JGE engine example
