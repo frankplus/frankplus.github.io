@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>CSPSP</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div class="game">
+      <nav class="site-nav"><a href="../">&larr; Francesco Pham &middot; personal website</a></nav>
+      <input type="button" id="fullscreen" class="controls" value="Fullscreen">
+      <div class="info" id="info">
+        <div id='spinner'></div>
+        <div id="status">Downloading...</div>
+        <div>
+          <progress value="0" max="100" id="progress" hidden=1></progress>
+        </div>
+      </div>
+      <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+
+      <h4>This is a port of CSPSP to the web - A 2D version of the game Counter Strike</h4>
+
+      <div class="instructions">
+        <table>
+          <tr>
+            <th>Button</th>
+            <th>PS button</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>W A S D</td>
+            <td>Analog stick</td>
+            <td>Player move / GUI move</td>
+          </tr>
+          <tr>
+            <td>R key</td>
+            <td>[] Square</td>
+            <td>Reload weapon</td>
+          </tr>
+          <tr>
+            <td>G key</td>
+            <td>Triangle</td>
+            <td>Drop weapon</td>
+          </tr>
+          <tr>
+            <td>Enter</td>
+            <td>Start</td>
+            <td>Game menu / Text confirm</td>
+          </tr>
+          <tr>
+            <td>Tab</td>
+            <td>Select</td>
+            <td>View statistics</td>
+          </tr>
+          <tr>
+            <td>Left mouse click</td>
+            <td>X Cross</td>
+            <td>Shoot / GUI enter</td>
+          </tr>
+          <tr>
+            <td>Right mouse click</td>
+            <td>O Circle</td>
+            <td>Swap weapon / GUI back</td>
+          </tr>
+          <tr>
+            <td>Middle mouse click</td>
+            <td>Triangle</td>
+            <td>Throw weapon</td>
+          </tr>
+          <tr>
+            <td>Left arrow</td>
+            <td>Left trigger</td>
+            <td>Rotate player counterclockwise / GUI move left tab</td>
+          </tr>
+          <tr>
+            <td>Right arrow</td>
+            <td>Right trigger</td>
+            <td>Rotate player clockwise / GUI move right tab</td>
+          </tr>
+          <tr>
+            <td>Space</td>
+            <td>X Cross</td>
+            <td>Shoot / GUI enter</td>
+          </tr>
+          <tr>
+            <td>Backspace</td>
+            <td>O Circle</td>
+            <td>Swap weapon / GUI back</td>
+          </tr>
+          <tr>
+            <td>U Key</td>
+            <td>Up</td>
+            <td>Chat</td>
+          </tr>
+          <tr>
+            <td>K Key</td>
+            <td>Right</td>
+            <td>Team Chat</td>
+          </tr>
+          <tr>
+            <td>J Key</td>
+            <td>Down</td>
+            <td>Buy weapon menu</td>
+          </tr>
+          <tr>
+            <td>Left ALT key</td>
+            <td></td>
+            <td>Change movement mode</td>
+          </tr>
+        </table><br>
+        <b> Gamepad is also supported (Tested with PS3 and Xbox one controllers) </b>
+      </div>
+
+      <form style="margin: 20px;">
+        <input type="checkbox" id="use_local_proxy" name="use_local_proxy" value="use_local_proxy">
+        <label for="use_local_proxy">Use localhost proxy</label>
+        <input type="button" id="set_proxy_btn" value="Set" onclick="onSetProxy()">
+        <!--
+        <label for="fname">Proxy address:</label><br>
+        <input type="text" id="proxy_address" value="wss://frankinfotech.it:2900">
+        <input type="button" id="set_proxy_btn" value="Set">
+        -->
+      </form>
+
+      <a href="https://discord.gg/K2Ene4y"><img class="discord" src="joindiscord.png" alt="join out discord"></a>
+    </div>
+
+
+    <script type='text/javascript'>
+      var statusElement = document.getElementById('status');
+      var progressElement = document.getElementById('progress');
+      var spinnerElement = document.getElementById('spinner');
+      var infoElement = document.getElementById('info');
+
+      var Module = {
+        canvas: (function() {
+          var canvas = document.getElementById('canvas');
+
+          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+          // application robust, you may want to override this behavior before shipping!
+          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+          return canvas;
+        })(),
+        setStatus: function(text) {
+          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+          if (text === Module.setStatus.last.text) return;
+          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          var now = Date.now();
+          if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+          Module.setStatus.last.time = now;
+          Module.setStatus.last.text = text;
+          if (m) {
+            text = m[1];
+            progressElement.value = parseInt(m[2])*100;
+            progressElement.max = parseInt(m[4])*100;
+            progressElement.hidden = false;
+            spinnerElement.hidden = false;
+            infoElement.hidden = false;
+            canvas.hidden = true;
+          } else {
+            progressElement.value = null;
+            progressElement.max = null;
+            progressElement.hidden = true;
+            if (!text) {
+              spinnerElement.style.display = 'none';
+              infoElement.hidden = true;
+            }
+            canvas.hidden = false;
+          }
+          statusElement.innerHTML = text;
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+      window.onerror = function(event) {
+        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+        Module.setStatus('Exception thrown, see JavaScript console');
+        spinnerElement.style.display = 'none';
+        Module.setStatus = function(text) {
+          if (text) Module.printErr('[post-exception status] ' + text);
+        };
+      };
+
+      function onSetProxy() {
+        use_local_proxy = document.getElementById("use_local_proxy").checked;
+        _set_local_proxy(use_local_proxy);
+      }
+
+      // Work-around chromium autoplay policy
+      // https://github.com/emscripten-core/emscripten/issues/6511
+      function resumeAudio(e) {
+          if (typeof Module === 'undefined'
+              || typeof Module.SDL2 == 'undefined'
+              || typeof Module.SDL2.audioContext == 'undefined')
+              return;
+          if (Module.SDL2.audioContext.state == 'suspended') {
+              Module.SDL2.audioContext.resume();
+          }
+          if (Module.SDL2.audioContext.state == 'running') {
+              document.getElementById('canvas').removeEventListener('click', resumeAudio);
+              document.removeEventListener('keydown', resumeAudio);
+          }
+      }
+      document.getElementById('canvas').addEventListener('click', resumeAudio);
+      document.addEventListener('keydown', resumeAudio);
+    </script>
+    <script async type="text/javascript" src="index.js"></script>
+
+    <footer class="footer">
+      Copyright © 2020 by <a href="../">Francesco Pham</a> <br>
+      All Rights Reserved.
+    </footer>
+  </body>
+</html>
+
+
